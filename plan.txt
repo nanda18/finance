@@ -1,0 +1,39 @@
+https://api.moneycontrol.com/mcapi/v1/earnings/actual-estimate?page=1&limit=2
+
+Above api gives actual , estimate values for many variables for many companies in below format
+
+{"success":1,"data":{"baseURL":"https://www.moneycontrol.com/india/stockpricequote","header":[{"name":"sc_id","type":"string"},{"name":"stockName","type":"string"},{"name":"stockUrl","type":"string"},{"name":"currentPrice","type":"string"},{"name":"perChange","type":"string"},{"name":"mtgdate","type":"string"},{"name":"curr_mktcap","type":"string"},{"name":"expectations","type":"string"},{"name":"expectationsPer","type":"string"},{"name":"quarterData","type":"array"},{"name":"exchange","type":"string"},{"name":"financialType","type":"string"}],"list":[["BTV","Bharti Airtel","/telecommunications-service/bhartiairtel/BA08","1,834.20","0.75","May 13, 2025","1,063,868.51","Beats Expectations","51.12",[["Revenue","47,876","47,877"],["Net Profit","11,162","7,386"],["EPS","18.61","10.91"]],"N","Consolidated"],["TEL","Tata Motors","/auto-lcvs-hcvs/tatamotors/TM03","698.95","-1.24","May 13, 2025","257,307.87","Beats Expectations","23.09",[["Revenue","119,503","121,057"],["Net Profit","8,891","7,223"],["EPS","24.55","22.16"]],"N","Consolidated"]],"tableHeader":["Q4 FY24-25","Mar 25","Estimates"]}}
+
+In the array ["Net Profit","11,162","7,386"], actual is the second value , estimated is the third value
+
+create a pandas df with sc_id (code), stock name, net profit actual, net profit estimated
+
+After this for each of the above, get board meeting announcement time using nse india api call
+
+https://www.nseindia.com/api/corporate-disclosure-getquote?symbol=JYOTHYLAB&corpType=announcement&market=equities&from_date=01-05-2025&to_date=14-05-2025
+
+Use the above call with symbol changing to sc_id, and use headers as browser header 
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer": "https://www.nseindia.com/"
+}
+
+dont use query params as params, use the above url only
+
+put random gap of 20 secs to 40 secs in between each nse india call to avoid nse india scraping getting caught
+
+the response to nse call will be in the below format
+
+[
+    {"symbol":"JYOTHYLAB","desc":"Dividend","dt":"12052025141723","attchmntFile":"https://nsearchives.nseindia.com/corporate/JYOTHYLAB_12052025141617_SE_Intimation.pdf","sm_name":"Jyothy Labs Limited","sm_isin":"INE668F01031","an_dt":"12-May-2025 14:17:23","sort_date":"2025-05-12 14:17:23","seq_id":null,"smIndustry":"Personal Care","orgid":null,"attchmntText":"Jyothy Labs Limited has informed the Exchange that Board of Directors at its meeting held on May 12, 2025, recommended Final Dividend of Rs. 3.5 per equity share.","bflag":null,"old_new":null,"csvName":null,"exchdisstime":"12-May-2025 14:17:24","difference":"00:00:01"},{"symbol":"JYOTHYLAB","desc":"Outcome of Board Meeting","dt":"12052025141051","attchmntFile":"https://nsearchives.nseindia.com/corporate/JYOTHYLAB_12052025140911_SE_Intimation.pdf","sm_name":"Jyothy Labs Limited","sm_isin":"INE668F01031","an_dt":"12-May-2025 14:10:51","sort_date":"2025-05-12 14:10:51","seq_id":null,"smIndustry":"Personal Care","orgid":null,"attchmntText":"Outcome of Board Meeting held on May 12, 2025","bflag":null,"old_new":null,"csvName":null,"exchdisstime":"12-May-2025 14:10:51","difference":"00:00:00"}
+]
+
+get element from the array whose desc matches Outcome of Board Meeting. if multiple items matches same desc, then choose the last element
+for that element, get exchdisstime
+
+So for each of the sc_id obtained from the pandas df, make the nse call, and add exchdisstime to the df
+
+print the df
+
+
