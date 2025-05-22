@@ -18,7 +18,7 @@ UPSTOX_API_KEY = 'YOUR_UPSTOX_API_KEY'  # Replace with your Upstox API key
 UPSTOX_ACCESS_TOKEN = 'YOUR_UPSTOX_ACCESS_TOKEN'  # Replace with your Upstox access token
 
 # Hardcoded share name and datetime
-TRADING_SYMBOL = 'TATAMOTORS'
+TRADING_SYMBOL = 'IRCON'
 # Use a past date for which historical data is available
 # For minute data, history is available from Jan 2022. Max retrieval 1 month for 1-15min intervals.
 TARGET_DATETIME_STR = '2024-05-14 10:00:00'  # Example: A valid past date and time
